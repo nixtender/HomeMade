@@ -12,13 +12,13 @@ namespace Api.Models.Post
         public UserModel Author { get; set; }
         public int CommentCount { get; set; }
 
-        public PostModel(ICollection<string>? pictures, string? description, DateTimeOffset createdPost, UserModel author, int commentCount)
+        /*public PostModel(ICollection<string>? pictures, string? description, DateTimeOffset createdPost, UserModel author, int commentCount)
         {
             Pictures = pictures;
             Description = description;
             CreatedPost = createdPost;
             Author = author;
             CommentCount = commentCount;
-        }
+        }*/
     }
 }

@@ -11,11 +11,13 @@ namespace Api.Controllers
     {
         private readonly AttachService _attachService;
         private readonly UserService _userService;
+        private readonly PostService _postService;
 
-        public AttachController(AttachService attachService, UserService userService)
+        public AttachController(AttachService attachService, UserService userService, PostService postService)
         {
             _attachService = attachService;
             _userService = userService;
+            _postService = postService;
         }
 
         [HttpPost]
@@ -35,6 +37,10 @@ namespace Api.Controllers
             }
             else throw new Exception("error");
         }
+
+        [HttpGet]
+        public async Task<FileStreamResult> GetPostPicture(Guid postPictureId, bool download = false)
+            => RenderAttach(await _postService.GetPostPicture(postPictureId), download);
 
         private FileStreamResult RenderAttach(AttachModel attach, bool download)
         {

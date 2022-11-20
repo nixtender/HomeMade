@@ -23,6 +23,11 @@ namespace Api.Mapper
             CreateMap<CreatePostModel, DAL.Entites.Post>()
                 .ForMember(d => d.Id, m => m.MapFrom(s => Guid.NewGuid()))
                 .ForMember(d => d.Created, m => m.MapFrom(s => DateTime.UtcNow));
+            CreateMap<DAL.Entites.Post, Models.Post.PostModel>()
+                .ForMember(d => d.Pictures, m => m.MapFrom(s => s.PostPictures))
+                .ForMember(d => d.CreatedPost, m => m.MapFrom(s => s.Created))
+                .ForMember(d => d.CommentCount, m => m.MapFrom(s => s.Comments == null ? 0 : s.Comments.Count))
+                .AfterMap<PostPictureMapperAction>();
 
             CreateMap<CreateComment, DAL.Entites.Comment>().ForMember(d => d.Created, m => m.MapFrom(s => DateTime.UtcNow));
             CreateMap<DAL.Entites.Comment, CommentModel>();

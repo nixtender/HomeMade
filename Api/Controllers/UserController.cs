@@ -52,26 +52,6 @@ namespace Api.Controllers
             else throw new Exception("you are not authorized");
         }
 
-        /*[HttpGet]
-        public async Task<FileResult> GetUserAvatar(Guid userId)
-        {
-            var attach = await _userService.GetUserAvatar(userId);
-            
-            return File(System.IO.File.ReadAllBytes(attach.FilePath), attach.MimeType);
-        }*/
-
-        /*[HttpGet]
-        public async Task<FileResult> DownloadAvatar(Guid userId)
-        {
-            var attach = await _userService.GetUserAvatar(userId);
-            HttpContext.Response.ContentType = attach.MimeType;
-            FileContentResult result = new FileContentResult(System.IO.File.ReadAllBytes(attach.FilePath), attach.MimeType)
-            {
-                FileDownloadName = attach.Name,
-            };
-            return result;
-        }*/
-
         [HttpGet]
         [Authorize]
         public async Task<List<UserModel>> GetUsers() => await _userService.GetUsers();

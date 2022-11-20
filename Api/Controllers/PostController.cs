@@ -3,6 +3,7 @@ using Api.Models.Comment;
 using Api.Models.Post;
 using Api.Services;
 using AutoMapper;
+using Common.Extentions;
 using DAL.Entites;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,14 +19,20 @@ namespace Api.Controllers
         private readonly PostService _postService;
         private readonly AttachService _attachService;
         private readonly UserService _userService;
-        private readonly IMapper _mapper;
 
-        public PostController(PostService postService, AttachService attachService, UserService userService, IMapper mapper)
+        public PostController(PostService postService, AttachService attachService, UserService userService, LinkGeneratorService links)
         {
             _postService = postService;
             _attachService = attachService;
             _userService = userService;
-            _mapper = mapper;
+            links.LinkPictureGenerator = x => Url.ControllerAction<AttachController>(nameof(AttachController.GetPostPicture), new
+            {
+                postPictureId = x.Id,
+            });
+            links.LinkAvatarGenerator = x => Url.ControllerAction<AttachController>(nameof(AttachController.GetUserAvatar), new
+            {
+                userId = x.Id,
+            });
         }
 
         [HttpPost]
@@ -83,11 +90,14 @@ namespace Api.Controllers
         }*/
 
         [HttpGet]
+        public async Task<List<PostModel>> GetPosts() => await _postService.GetPosts();
+
+        /*[HttpGet]
         public async Task<FileResult> GetPostPicture(Guid id)
         {
             var attach = await _postService.GetPostPicture(id);
             return File(System.IO.File.ReadAllBytes(attach.FilePath), attach.MimeType);
-        }
+        }*/
 
         [HttpPost]
         [Authorize]

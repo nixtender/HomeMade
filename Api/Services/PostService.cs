@@ -55,6 +55,16 @@ namespace Api.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<PostModel>> GetPosts()
+        {
+            var posts = await _context.Posts
+                .Include(x => x.Author).ThenInclude(x => x.Avatar)
+                .Include(x => x.PostPictures).AsNoTracking().OrderByDescending(x => x.Created)
+                .Select(x => _mapper.Map<PostModel>(x))
+                .ToListAsync();
+            return posts;
+        }
+
         public async Task<Post> GetPost(Guid postId)
         {
             var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
@@ -63,10 +73,10 @@ namespace Api.Services
             return post;
         }
 
-        public async Task<Attach> GetPostPicture(Guid id)
+        public async Task<AttachModel> GetPostPicture(Guid id)
         {
-            var atach = await _context.Attaches.FirstOrDefaultAsync(x => x.Id == id);
-            return atach;
+            var atach = await _context.PostPictures.FirstOrDefaultAsync(x => x.Id == id);
+            return _mapper.Map<AttachModel>(atach);
         }
 
         public async Task AddComment(Post post, CreateComment model, User user)
