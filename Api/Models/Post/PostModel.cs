@@ -1,21 +1,24 @@
 ﻿using DAL.Entites;
 using Microsoft.AspNetCore.Mvc;
+using Api.Models.User;
 
-namespace Api.Models
+namespace Api.Models.Post
 {
     public class PostModel
     {
         public ICollection<string>? Pictures { get; set; }
         public string? Description { get; set; }
         public DateTimeOffset CreatedPost { get; set; }
-        public string Author { get; set; }
+        public UserModel Author { get; set; }
+        public int CommentCount { get; set; }
 
-        public PostModel(ICollection<string>? pictures, string? description, DateTimeOffset createdPost, string author)
+        public PostModel(ICollection<string>? pictures, string? description, DateTimeOffset createdPost, UserModel author, int commentCount)
         {
             Pictures = pictures;
             Description = description;
             CreatedPost = createdPost;
             Author = author;
+            CommentCount = commentCount;
         }
     }
 }

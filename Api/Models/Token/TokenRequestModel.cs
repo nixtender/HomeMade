@@ -1,11 +1,11 @@
-﻿namespace Api.Models
+﻿namespace Api.Models.Token
 {
     public class TokenRequestModel
     {
         public string login { get; set; }
         public string pass { get; set; }
 
-        public TokenRequestModel (string login, string pass)
+        public TokenRequestModel(string login, string pass)
         {
             this.login = login;
             this.pass = pass;

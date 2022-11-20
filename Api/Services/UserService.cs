@@ -1,5 +1,7 @@
 ﻿using Api.Configs;
-using Api.Models;
+using Api.Models.Attach;
+using Api.Models.Token;
+using Api.Models.User;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Common;
@@ -73,7 +75,11 @@ namespace Api.Services
         [HttpGet]
         public async Task<List<UserModel>> GetUsers()
         {
-            return await _context.Users.AsNoTracking().ProjectTo<UserModel>(_mapper.ConfigurationProvider).ToListAsync();
+            return await _context.Users.AsNoTracking()
+            .Include(x => x.Avatar)
+            //.Include(x => x.Posts)
+            .Select(x => _mapper.Map<UserModel>(x))
+            .ToListAsync();
         }
 
         public async Task<DAL.Entites.User> GetUserById(Guid id)

@@ -1,13 +1,10 @@
-﻿using Api.Models;
+﻿using Api.Models.Attach;
+using Api.Models.User;
 using Api.Services;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using DAL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
+using Common.Extentions;
 
 namespace Api.Controllers
 {
@@ -17,9 +14,15 @@ namespace Api.Controllers
     {
         private readonly UserService _userService;
 
-        public UserController(UserService userService)
+        public UserController(UserService userService, LinkGeneratorService links)
         {
             _userService = userService;
+
+            links.LinkAvatarGenerator = x =>
+            Url.ControllerAction<AttachController>(nameof(AttachController.GetUserAvatar), new
+            {
+                userId = x.Id,
+            });
         }
 
         [HttpPost]
@@ -49,15 +52,15 @@ namespace Api.Controllers
             else throw new Exception("you are not authorized");
         }
 
-        [HttpGet]
+        /*[HttpGet]
         public async Task<FileResult> GetUserAvatar(Guid userId)
         {
             var attach = await _userService.GetUserAvatar(userId);
             
             return File(System.IO.File.ReadAllBytes(attach.FilePath), attach.MimeType);
-        }
+        }*/
 
-        [HttpGet]
+        /*[HttpGet]
         public async Task<FileResult> DownloadAvatar(Guid userId)
         {
             var attach = await _userService.GetUserAvatar(userId);
@@ -67,7 +70,7 @@ namespace Api.Controllers
                 FileDownloadName = attach.Name,
             };
             return result;
-        }
+        }*/
 
         [HttpGet]
         [Authorize]

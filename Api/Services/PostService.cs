@@ -1,4 +1,6 @@
-﻿using Api.Models;
+﻿using Api.Models.Attach;
+using Api.Models.Comment;
+using Api.Models.Post;
 using AutoMapper;
 using DAL;
 using DAL.Entites;
@@ -29,7 +31,6 @@ namespace Api.Services
             {
                 var dbPost = _mapper.Map<DAL.Entites.Post>(model);
                 dbPost.Author = user;
-                dbPost.Author = user.Name;
 
                 await _context.Posts.AddAsync(dbPost);
                 await _context.SaveChangesAsync();
@@ -56,7 +57,7 @@ namespace Api.Services
 
         public async Task<Post> GetPost(Guid postId)
         {
-            var post = await _context.Posts.Include(x => x.PostPictures).Include(x => x.Comments).FirstOrDefaultAsync(x => x.Id == postId);
+            var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null)
                 throw new Exception("post not found");
             return post;

@@ -1,5 +1,6 @@
 using Api;
 using Api.Configs;
+using Api.Mapper;
 using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +59,7 @@ builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 builder.Services.AddScoped<UserService>();
 builder.Services.AddTransient<AttachService>();
 builder.Services.AddScoped<PostService>();
+builder.Services.AddScoped<LinkGeneratorService>();
 
 builder.Services.AddAuthentication(o =>
 {

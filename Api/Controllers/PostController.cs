@@ -1,4 +1,6 @@
-﻿using Api.Models;
+﻿using Api.Models.Attach;
+using Api.Models.Comment;
+using Api.Models.Post;
 using Api.Services;
 using AutoMapper;
 using DAL.Entites;
@@ -61,21 +63,24 @@ namespace Api.Controllers
             
         }
 
-        [HttpGet]
+        /*[HttpGet]
         public async Task<PostModel> GetPostById(Guid postId)
         {
             var post = await _postService.GetPost(postId);
             List<string> paths = new List<string>();
-            foreach(var postPicture in post.PostPictures)
+            if (post.PostPictures != null)
             {
-                var path = postPicture.Id;
-                var str = "/Api/post/GetPostPicture?id=";
-                var newPath = str + path;
-                paths.Add(newPath);
+                foreach (var postPicture in post.PostPictures)
+                {
+                    var path = postPicture.Id;
+                    var str = "/Api/post/GetPostPicture?id=";
+                    var newPath = str + path;
+                    paths.Add(newPath);
+                }
             }
-            var postModel = new PostModel(paths, post.Description, post.Created, post.Author);
+            var postModel = new PostModel(paths, post.Description, post.Created, post.Author, post.Comments == null ? 0 : post.Comments.Count);
             return postModel;
-        }
+        }*/
 
         [HttpGet]
         public async Task<FileResult> GetPostPicture(Guid id)

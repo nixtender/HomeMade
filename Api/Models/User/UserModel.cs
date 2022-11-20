@@ -1,4 +1,4 @@
-﻿namespace Api.Models
+﻿namespace Api.Models.User
 {
     public class UserModel
     {
@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public string Email { get; set; }
         public DateTimeOffset BirthDate { get; set; }
+        public string? AvatarLink { get; set; }
 
         public UserModel(Guid id, string name, string email, DateTimeOffset birthDate)
         {
