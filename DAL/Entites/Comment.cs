@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,9 @@ namespace DAL.Entites
         public Guid Id { get; set; }
         public string Description { get; set; } = null!;
         public DateTimeOffset Created { get; set; }
-        public string Author { get; set; } = null!;
+        public string AuthorId { get; set; } = null!;
 
         public Guid PostId { get; set; }
-        public virtual Post Post { get; set; }
+        public virtual Post Post { get; set; } = null!;
     }
 }

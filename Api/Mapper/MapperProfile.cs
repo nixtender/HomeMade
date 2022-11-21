@@ -29,7 +29,8 @@ namespace Api.Mapper
                 .ForMember(d => d.CommentCount, m => m.MapFrom(s => s.Comments == null ? 0 : s.Comments.Count))
                 .AfterMap<PostPictureMapperAction>();
 
-            CreateMap<CreateComment, DAL.Entites.Comment>().ForMember(d => d.Created, m => m.MapFrom(s => DateTime.UtcNow));
+            CreateMap<CreateComment, DAL.Entites.Comment>()
+                .ForMember(d => d.Created, m => m.MapFrom(s => DateTime.UtcNow));
             CreateMap<DAL.Entites.Comment, CommentModel>();
         }
     }

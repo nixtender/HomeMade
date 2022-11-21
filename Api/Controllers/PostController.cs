@@ -70,57 +70,34 @@ namespace Api.Controllers
             
         }
 
-        /*[HttpGet]
-        public async Task<PostModel> GetPostById(Guid postId)
-        {
-            var post = await _postService.GetPost(postId);
-            List<string> paths = new List<string>();
-            if (post.PostPictures != null)
-            {
-                foreach (var postPicture in post.PostPictures)
-                {
-                    var path = postPicture.Id;
-                    var str = "/Api/post/GetPostPicture?id=";
-                    var newPath = str + path;
-                    paths.Add(newPath);
-                }
-            }
-            var postModel = new PostModel(paths, post.Description, post.Created, post.Author, post.Comments == null ? 0 : post.Comments.Count);
-            return postModel;
-        }*/
-
         [HttpGet]
         public async Task<List<PostModel>> GetPosts() => await _postService.GetPosts();
 
-        /*[HttpGet]
-        public async Task<FileResult> GetPostPicture(Guid id)
-        {
-            var attach = await _postService.GetPostPicture(id);
-            return File(System.IO.File.ReadAllBytes(attach.FilePath), attach.MimeType);
-        }*/
+        [HttpGet]
+        public async Task<PostModel> GetPost(Guid postId) => await _postService.GetPost(postId);
 
         [HttpPost]
         [Authorize]
         public async Task AddComment(CreateComment model)
         {
-            var post = await _postService.GetPost(model.PostId);
+            var post = await _postService.GetPostById(model.PostId);
             var userIdString = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
-            if (Guid.TryParse(userIdString, out var userId))
-            {
-                var user = await _userService.GetUserById(userId);
-                await _postService.AddComment(post, model, user);
-            }    
+            await _postService.AddComment(post, model, userIdString); 
         }
 
         [HttpGet]
         public async Task<List<CommentModel>> GetComments(Guid postId)
         {
-            var post = await _postService.GetPost(postId);
+            var post = await _postService.GetPostById(postId);
             List<CommentModel> commentModels = new List<CommentModel>();
-            foreach(var comment in post.Comments)
+            if (post.Comments != null)
             {
-                commentModels.Add(_postService.GetComment(comment));
+                foreach (var comment in post.Comments)
+                {
+                    commentModels.Add(await _postService.GetComment(comment));
+                }
             }
+            else throw new Exception("No Comments");
             return commentModels;
         }
     }

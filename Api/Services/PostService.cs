@@ -5,6 +5,7 @@ using AutoMapper;
 using DAL;
 using DAL.Entites;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -59,13 +60,20 @@ namespace Api.Services
         {
             var posts = await _context.Posts
                 .Include(x => x.Author).ThenInclude(x => x.Avatar)
+                .Include(x => x.Comments)
                 .Include(x => x.PostPictures).AsNoTracking().OrderByDescending(x => x.Created)
                 .Select(x => _mapper.Map<PostModel>(x))
                 .ToListAsync();
             return posts;
         }
 
-        public async Task<Post> GetPost(Guid postId)
+        public async Task<PostModel> GetPost(Guid postId)
+        {
+            var post = await GetPostById(postId);
+            return _mapper.Map<PostModel>(post);
+        }
+
+        public async Task<Post> GetPostById(Guid postId)
         {
             var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null)
@@ -79,20 +87,25 @@ namespace Api.Services
             return _mapper.Map<AttachModel>(atach);
         }
 
-        public async Task AddComment(Post post, CreateComment model, User user)
+        public async Task AddComment(Post post, CreateComment model, string userId)
         {
             var dbComment = _mapper.Map<Comment>(model);
-            dbComment.Author = user.Name;
-            dbComment.Post = post;
+            dbComment.AuthorId = userId;
 
             await _context.Comments.AddAsync(dbComment);
             await _context.SaveChangesAsync();
         }
 
-        public CommentModel GetComment(Comment comment)
+        public async Task<CommentModel> GetComment(Comment comment)
         {
             var commentModel = _mapper.Map<CommentModel>(comment);
-            return commentModel;
+            if (Guid.TryParse(comment.AuthorId, out var authorId))
+            {
+                var author = await _userService.GetUserById(authorId);
+                commentModel.Author = _mapper.Map<Models.User.UserModel>(author);
+                return commentModel;
+            }
+            else throw new Exception("not user");
         }
     }
 }
