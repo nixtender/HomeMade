@@ -105,21 +105,28 @@ namespace Api.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task LikeOrNot(Guid postId)
+        public async Task LikeOrNotPost(Guid postId)
         {
+            //var post = await _postService.GetPostById(postId);
             var userIdString = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             if (Guid.TryParse(userIdString, out var userId))
             {
                 await _postService.LikeOrNot(postId, userId);
             }
             else throw new Exception("user not found");
-            /*var post = await _postService.GetPostById(postId);
+        }
+
+/*        [HttpPost]
+        [Authorize]
+        public async Task LikeOrNotComment(Guid commentId)
+        {
+            var comment = await _postService.GetCommentById(commentId);
             var userIdString = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             if (Guid.TryParse(userIdString, out var userId))
             {
-                await _postService.LikeOrNot(post, userId);
+                await _postService.LikeOrNot(postId, userId);
             }
-            else throw new Exception("user not found");*/
+            else throw new Exception("user not found");
         }
-    }
+*/    }
 }

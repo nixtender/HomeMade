@@ -17,5 +17,8 @@ namespace DAL.Entites
         public virtual ICollection<Post>? Posts { get; set; }
         public virtual Avatar? Avatar { get; set; }
         public virtual ICollection<UserSession>? Sessions { get; set; }
+        //public virtual ICollection<LikePost>? LikePosts { get; set; }
+        //public virtual ICollection<LikeComment>? LikeComments { get; set; }
+        //public virtual List<Like>? Likes { get; set; } = new List<Like>();
     }
 }

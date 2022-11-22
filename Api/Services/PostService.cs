@@ -76,10 +76,10 @@ namespace Api.Services
 
         public async Task<Post> GetPostById(Guid postId)
         {
-            var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).Include(x => x.LikePost).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
+            var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).Include(x => x.LikePosts).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null)
                 throw new Exception("post not found");
-            return post;
+            else return post;
         }
 
         public async Task<AttachModel> GetPostPicture(Guid id)
@@ -109,14 +109,46 @@ namespace Api.Services
             else throw new Exception("not user");
         }
 
+        public async Task<Comment> GetCommentById(Guid commentId)
+        {
+            var comment = await _context.Comments.Include(x => x.Post).Include(x => x.LikeComments).FirstOrDefaultAsync(x => x.Id == commentId);
+            if (comment != null)
+                return comment;
+            else throw new Exception("comment not found");
+        }
+
         public async Task LikeOrNot(Guid postId, Guid userId)
+        {
+            var post = await _context.Posts.Include(x => x.LikePosts).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
+            if (post != null)
+            {
+                foreach (var likePost in post.LikePosts)
+                {
+                    if (likePost.UserId == userId)
+                    {
+                        //post.LikePosts.Remove(likePost);
+                        //likePost.User.LikePosts.Remove(likePost);
+                        _context.Likes.Remove(likePost);
+                        _context.SaveChanges();
+                        return;
+                    }
+                }
+                var newLikePost = new LikePost { Post = post, UserId = userId };
+                post.LikePosts.Add(newLikePost);
+                //await _context.LikePosts.AddAsync(newLikePost);
+                await _context.SaveChangesAsync();
+            }
+            else throw new Exception("post not found");
+            
+        }
+
+        /*public async Task LikeOrNot(Guid postId, Guid userId)
         {
             var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).Include(x => x.LikePost).FirstOrDefaultAsync(x => x.Id == postId);
             if (post != null)
             {
                 if (post.LikePost != null)
                 {
-                    //var like = post.LikePost;
                     if (post.LikePost.Users.Count > 0)
                     {
                         if (post.LikePost.Users.Contains(userId))
@@ -148,6 +180,6 @@ namespace Api.Services
                 }
             }
             else throw new Exception("post not found");
-        }
+        }*/
     }
 }
