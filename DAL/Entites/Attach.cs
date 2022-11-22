@@ -13,7 +13,6 @@ namespace DAL.Entites
         public string MimeType { get; set; } = null!;
         public string FilePath { get; set; } = null!;
         public long Size { get; set; }
-        //public long? AuthorId { get; set; }
 
         public virtual User Author { get; set; }
     }

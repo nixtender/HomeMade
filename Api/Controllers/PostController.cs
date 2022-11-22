@@ -1,5 +1,6 @@
 ﻿using Api.Models.Attach;
 using Api.Models.Comment;
+using Api.Models.Like;
 using Api.Models.Post;
 using Api.Services;
 using AutoMapper;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Api.Controllers
 {
@@ -99,6 +101,25 @@ namespace Api.Controllers
             }
             else throw new Exception("No Comments");
             return commentModels;
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task LikeOrNot(Guid postId)
+        {
+            var userIdString = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            if (Guid.TryParse(userIdString, out var userId))
+            {
+                await _postService.LikeOrNot(postId, userId);
+            }
+            else throw new Exception("user not found");
+            /*var post = await _postService.GetPostById(postId);
+            var userIdString = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            if (Guid.TryParse(userIdString, out var userId))
+            {
+                await _postService.LikeOrNot(post, userId);
+            }
+            else throw new Exception("user not found");*/
         }
     }
 }
