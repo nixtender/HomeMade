@@ -28,10 +28,10 @@ namespace DAL
             
             modelBuilder.Entity<Avatar>().ToTable(nameof(Avatars));
             modelBuilder.Entity<Avatar>().HasOne(b => b.User).WithOne(b => b.Avatar).HasForeignKey<Avatar>(b => b.UserId);
-            modelBuilder.Entity<LikePost>().ToTable(nameof(LikePosts));
-            //modelBuilder.Entity<LikePost>().HasOne(b => b.Post).WithOne(b => b.LikePost).HasForeignKey<LikePost>(b => b.PostId);
+            /*modelBuilder.Entity<LikePost>().ToTable(nameof(LikePosts));
+            modelBuilder.Entity<LikePost>().HasOne(b => b.Post).WithOne(b => b.LikePost).HasForeignKey<LikePost>(b => b.PostId);
             modelBuilder.Entity<LikeComment>().ToTable(nameof(LikeComments));
-           // modelBuilder.Entity<LikeComment>().HasOne(b => b.Comment).WithOne(b => b.LikeComment).HasForeignKey<LikeComment>(b => b.CommentId);
+            modelBuilder.Entity<LikeComment>().HasOne(b => b.Comment).WithOne(b => b.LikeComment).HasForeignKey<LikeComment>(b => b.CommentId);*/
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
