@@ -136,26 +136,6 @@ namespace Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Likes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Count = table.Column<int>(type: "integer", nullable: false),
-                    Users = table.Column<List<Guid>>(type: "uuid[]", nullable: false),
-                    AuthorId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Likes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Likes_Posts_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "Posts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PostPictures",
                 columns: table => new
                 {
@@ -180,23 +160,41 @@ namespace Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LikePosts",
+                name: "Likes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PostId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Count = table.Column<int>(type: "integer", nullable: false),
+                    Users = table.Column<List<Guid>>(type: "uuid[]", nullable: false),
+                    PostForLikeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CommentForLikeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Discriminator = table.Column<string>(type: "text", nullable: false),
+                    CommentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PostId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LikePosts", x => x.Id);
+                    table.PrimaryKey("PK_Likes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LikePosts_Likes_Id",
-                        column: x => x.Id,
-                        principalTable: "Likes",
+                        name: "FK_Likes_Comments_CommentForLikeId",
+                        column: x => x.CommentForLikeId,
+                        principalTable: "Comments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LikePosts_Posts_PostId",
+                        name: "FK_Likes_Comments_CommentId",
+                        column: x => x.CommentId,
+                        principalTable: "Comments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Likes_Posts_PostForLikeId",
+                        column: x => x.PostForLikeId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Likes_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
                         principalColumn: "Id",
@@ -220,15 +218,26 @@ namespace Api.Migrations
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LikePosts_PostId",
-                table: "LikePosts",
-                column: "PostId",
+                name: "IX_Likes_CommentForLikeId",
+                table: "Likes",
+                column: "CommentForLikeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Likes_CommentId",
+                table: "Likes",
+                column: "CommentId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Likes_AuthorId",
+                name: "IX_Likes_PostForLikeId",
                 table: "Likes",
-                column: "AuthorId");
+                column: "PostForLikeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Likes_PostId",
+                table: "Likes",
+                column: "PostId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PostPictures_PostId",
@@ -265,10 +274,7 @@ namespace Api.Migrations
                 name: "Avatars");
 
             migrationBuilder.DropTable(
-                name: "Comments");
-
-            migrationBuilder.DropTable(
-                name: "LikePosts");
+                name: "Likes");
 
             migrationBuilder.DropTable(
                 name: "PostPictures");
@@ -277,7 +283,7 @@ namespace Api.Migrations
                 name: "UserSessions");
 
             migrationBuilder.DropTable(
-                name: "Likes");
+                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "Attaches");
