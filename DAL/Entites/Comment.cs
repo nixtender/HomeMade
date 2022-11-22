@@ -16,5 +16,6 @@ namespace DAL.Entites
 
         public Guid PostId { get; set; }
         public virtual Post Post { get; set; } = null!;
+        public virtual LikeComment? LikeComment { get; set; }
     }
 }
