@@ -9,8 +9,6 @@ namespace DAL.Entites
     public class Like
     {
         public Guid Id { get; set; }
-        public int Count { get; set; }
-        public List<Guid> Users { get; set; } = new List<Guid>();
 
         //public Guid UserLikeId { get; set; }
         public virtual User UserLike { get; set; }
