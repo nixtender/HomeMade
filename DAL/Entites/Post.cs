@@ -11,7 +11,9 @@ namespace DAL.Entites
         public Guid Id { get; set; }
         public string? Description { get; set; }
         public DateTimeOffset Created { get; set; }
-        //public string Author { get; set; } = null!;
+
+        public bool IsExist { get; set; } = true;
+
 
         public Guid AuthorId { get; set; }
         public virtual User Author { get; set; } = null!;

@@ -80,6 +80,18 @@ namespace Api.Controllers
 
         [HttpPost]
         [Authorize]
+        public async Task DeletePost(Guid postId)
+        {
+            var userIdString = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            if (Guid.TryParse(userIdString, out var userId))
+            {
+                await _postService.DeletePost(postId, userId);
+            }
+            else throw new Exception("user not found");
+        }
+
+        [HttpPost]
+        [Authorize]
         public async Task AddComment(CreateComment model)
         {
             var post = await _postService.GetPostById(model.PostId);
@@ -96,11 +108,23 @@ namespace Api.Controllers
             {
                 foreach (var comment in post.Comments)
                 {
-                    commentModels.Add(await _postService.GetComment(comment));
+                    commentModels.Add(await _postService.GetComment(comment.Id));
                 }
             }
             else throw new Exception("No Comments");
             return commentModels;
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task DeleteComment(Guid commentId)
+        {
+            var userIdString = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            if (Guid.TryParse(userIdString, out var userId))
+            {
+                await _postService.DeleteComment(commentId, userId);
+            }
+            else throw new Exception("user not found");
         }
 
         [HttpPost]

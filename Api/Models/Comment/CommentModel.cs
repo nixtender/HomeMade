@@ -7,5 +7,6 @@ namespace Api.Models.Comment
         public UserModel Author { get; set; } = null!;
         public string Description { get; set; } = null!;
         public DateTimeOffset Created { get; set; }
+        public int LikeCount { get; set; }
     }
 }

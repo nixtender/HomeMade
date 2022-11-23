@@ -63,7 +63,7 @@ namespace Api.Services
             var posts = await _context.Posts
                 .Include(x => x.Author).ThenInclude(x => x.Avatar)
                 .Include(x => x.Comments)
-                .Include(x => x.PostPictures).AsNoTracking().OrderByDescending(x => x.Created)
+                .Include(x => x.PostPictures).Where(x => x.IsExist).AsNoTracking().OrderByDescending(x => x.Created)
                 .Select(x => _mapper.Map<PostModel>(x))
                 .ToListAsync();
             return posts;
@@ -83,6 +83,18 @@ namespace Api.Services
             return post;
         }
 
+        public async Task DeletePost(Guid postId, Guid userId)
+        {
+            var post = await GetPostById(postId);
+            if (post.AuthorId == userId)
+            {
+                post.IsExist = false;
+                _context.Posts.Update(post);
+                await _context.SaveChangesAsync();
+            }
+            else throw new Exception("someone else's post");
+        }
+
         public async Task<AttachModel> GetPostPicture(Guid id)
         {
             var atach = await _context.PostPictures.FirstOrDefaultAsync(x => x.Id == id);
@@ -98,8 +110,9 @@ namespace Api.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<CommentModel> GetComment(Comment comment)
+        public async Task<CommentModel> GetComment(Guid commentId)
         {
+            var comment = await GetCommentById(commentId);
             var commentModel = _mapper.Map<CommentModel>(comment);
             if (Guid.TryParse(comment.AuthorId, out var authorId))
             {
@@ -108,6 +121,26 @@ namespace Api.Services
                 return commentModel;
             }
             else throw new Exception("not user");
+        }
+
+        public async Task<Comment> GetCommentById(Guid commentId)
+        {
+            var comment = await _context.Comments.FirstOrDefaultAsync(x => x.Id == commentId);
+            if (comment != null)
+                return comment;
+            else throw new Exception("comment not found");
+        }
+
+        public async Task DeleteComment(Guid commentId, Guid userId)
+        {
+            var comment = await GetCommentById(commentId);
+            if (comment.AuthorId == userId.ToString())
+            {
+                comment.IsExist = false;
+                _context.Comments.Update(comment);
+                await _context.SaveChangesAsync();
+            }
+            else throw new Exception("someone else's post");
         }
 
         public async Task LikeOrNotPost(Guid postId, Guid userId)

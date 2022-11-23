@@ -14,6 +14,8 @@ namespace DAL.Entites
         public DateTimeOffset Created { get; set; }
         public string AuthorId { get; set; } = null!;
 
+        public bool IsExist { get; set; } = true;
+
         public Guid PostId { get; set; }
         public virtual Post Post { get; set; } = null!;
         public virtual List<LikeComment> LikeComments { get; set; } = new List<LikeComment>();
