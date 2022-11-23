@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using System.ComponentModel.Design;
 
 namespace Api.Services
 {
@@ -76,7 +77,7 @@ namespace Api.Services
 
         public async Task<Post> GetPostById(Guid postId)
         {
-            var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).Include(x => x.LikePost).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
+            var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).Include(x => x.LikePosts).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null)
                 throw new Exception("post not found");
             return post;
@@ -111,36 +112,60 @@ namespace Api.Services
 
         public async Task LikeOrNotPost(Guid postId, Guid userId)
         {
-            var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).Include(x => x.LikePost).FirstOrDefaultAsync(x => x.Id == postId);
+            var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).Include(x => x.LikePosts).FirstOrDefaultAsync(x => x.Id == postId);
             if (post != null)
             {
-                if (post.LikePost != null)
+                var user = await _context.Users.Include(x => x.Likes).AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId);
+                foreach (var likePost in post.LikePosts)
                 {
-                    LikeOrNot(post.LikePost, userId);
-                    await _context.SaveChangesAsync();
+                    if (likePost.UserLikePostId == userId)
+                    {
+                        _context.Likes.Remove(likePost);
+                        _context.SaveChanges();
+                        return;
+                    }
                 }
-                else
-                {
-                    List<Guid> users = new List<Guid>();
-                    users.Add(userId);
-                    var newLike = new LikePost { PostForLike = post, Count = 1, Users = users };
-                    post.LikePost = newLike;
-                    await _context.SaveChangesAsync();
-                }
+                var newLikePost = new LikePost { UserLike = user, Post = post };
+                user.Likes.Add(newLikePost);
+                post.LikePosts.Add(newLikePost);
+                await _context.SaveChangesAsync();
             }
             else throw new Exception("post not found");
         }
 
         public async Task LikeOrNotComment(Guid commentId, Guid userId)
         {
-            var comment = await _context.Comments.Include(x => x.LikeComment).FirstOrDefaultAsync(x => x.Id == commentId);
+            var comment = await _context.Comments.Include(x => x.LikeComments).FirstOrDefaultAsync(x => x.Id == commentId); 
+            if (comment != null)
+            {
+                var user = await _context.Users.Include(x => x.Likes).AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId);
+                foreach (var likeComment in comment.LikeComments)
+                {
+                    if (likeComment.UserLikeCommentId == userId)
+                    {
+                        _context.Likes.Remove(likeComment);
+                        _context.SaveChanges();
+                        return;
+                    }
+                }
+                var newLikeComment = new LikeComment { UserLike = user, Comment = comment };
+                user.Likes.Add(newLikeComment);
+                comment.LikeComments.Add(newLikeComment);
+                await _context.SaveChangesAsync();
+            }
+            else throw new Exception("post not found");
+        }
+
+        /*public async Task LikeOrNotComment(Guid commentId, Guid userId)
+        {
+            var comment = await _context.Comments.Include(x => x.LikeComments).FirstOrDefaultAsync(x => x.Id == commentId);
             if (comment != null)
             {
                 if (comment.LikeComment != null)
                 {
                     LikeOrNot(comment.LikeComment, userId);
                     await _context.SaveChangesAsync();
-                    /*if (post.LikePost.Users.Count > 0)
+                    *//*if (post.LikePost.Users.Count > 0)
                     {
                         if (post.LikePost.Users.Contains(userId))
                         {
@@ -159,7 +184,7 @@ namespace Api.Services
                         post.LikePost.Users.Add(userId);
                         post.LikePost.Count++;
                         await _context.SaveChangesAsync();
-                    }*/
+                    }*//*
 
                 }
                 else
@@ -194,6 +219,6 @@ namespace Api.Services
                 like.Users.Add(userId);
                 like.Count++;
             }
-        }
+        }*/
     }
 }
