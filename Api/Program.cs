@@ -14,6 +14,7 @@ var authSection = builder.Configuration.GetSection(AuthConfig.Position);
 var authConfig = authSection.Get<AuthConfig>();
 
 builder.Services.Configure<AuthConfig>(authSection);
+builder.Services.Configure<PushConfig>(builder.Configuration.GetSection(PushConfig.Position));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -60,6 +61,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddTransient<AttachService>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<LinkGeneratorService>();
+builder.Services.AddScoped<GooglePushService>();
 
 builder.Services.AddAuthentication(o =>
 {
