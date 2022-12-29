@@ -14,9 +14,9 @@ namespace Api.Services
         {
             d.AvatarLink = s.Avatar == null ? null : LinkAvatarGenerator?.Invoke(s);
         }
-        public void FixContent(Post s, PostModel d)
+        public void FixContent(PostPicture s, AttachExternalModel d)
         {
-            if (s.PostPictures != null)
+            /*if (s.PostPictures != null)
             {
                 d.Pictures.Clear();
                 foreach (var link in s.PostPictures)
@@ -24,7 +24,8 @@ namespace Api.Services
                     d.Pictures.Add(LinkPictureGenerator?.Invoke(link));
                 }
             }
-            else d.Pictures = null;
+            else d.Pictures = null;*/
+            d.PictureLink = LinkPictureGenerator?.Invoke(s);
         }
     }
 }

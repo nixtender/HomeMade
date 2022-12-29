@@ -16,7 +16,9 @@ namespace Api.Mapper
                 .ForMember(d => d.Id, m => m.MapFrom(s => Guid.NewGuid()))
                 .ForMember(d => d.PasswordHash, m => m.MapFrom(s => HashHelper.GetHash(s.Password)))
                 .ForMember(d => d.BirthDate, m => m.MapFrom(s => s.BirthDate.UtcDateTime));
-            CreateMap<DAL.Entites.User, UserModel>().AfterMap<UserAvatarMapperAction>();
+            CreateMap<DAL.Entites.User, UserModel>()
+                .ForMember(d => d.PostCount, m => m.MapFrom(s => s.Posts == null ? 0 : s.Posts.Count))
+                .AfterMap<UserAvatarMapperAction>();
 
             CreateMap<DAL.Entites.Attach, AttachModel>();
 
@@ -26,8 +28,9 @@ namespace Api.Mapper
             CreateMap<DAL.Entites.Post, Models.Post.PostModel>()
                 .ForMember(d => d.Pictures, m => m.MapFrom(s => s.PostPictures))
                 .ForMember(d => d.CreatedPost, m => m.MapFrom(s => s.Created))
-                .ForMember(d => d.CommentCount, m => m.MapFrom(s => s.Comments == null ? 0 : s.Comments.Count))
-                .AfterMap<PostPictureMapperAction>();
+                .ForMember(d => d.CommentCount, m => m.MapFrom(s => s.Comments == null ? 0 : s.Comments.Count));
+            //.AfterMap<PostPictureMapperAction>();
+            CreateMap<DAL.Entites.PostPicture, AttachExternalModel>().AfterMap<PostPictureMapperAction>();
 
             CreateMap<CreateComment, DAL.Entites.Comment>()
                 .ForMember(d => d.Created, m => m.MapFrom(s => DateTime.UtcNow));

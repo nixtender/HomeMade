@@ -6,7 +6,8 @@ namespace Api.Models.Post
 {
     public class PostModel
     {
-        public ICollection<string>? Pictures { get; set; }
+        public Guid Id { get; set; }
+        public ICollection<Attach.AttachExternalModel>? Pictures { get; set; }
         public string? Description { get; set; }
         public DateTimeOffset CreatedPost { get; set; }
         public UserModel Author { get; set; }

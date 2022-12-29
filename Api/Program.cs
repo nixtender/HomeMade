@@ -1,6 +1,7 @@
 using Api;
 using Api.Configs;
 using Api.Mapper;
+using Api.Middlewares;
 using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -114,6 +115,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseTokenValidator();
+app.UseGlobalErrorWrapper();
 app.MapControllers();
 
 app.Run();

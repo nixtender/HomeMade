@@ -6,14 +6,14 @@ using DAL.Entites;
 
 namespace Api.Mapper.MapperActions
 {
-    public class PostPictureMapperAction : IMappingAction<Post, PostModel>
+    public class PostPictureMapperAction : IMappingAction<PostPicture, AttachExternalModel>
     {
         private LinkGeneratorService _links;
         public PostPictureMapperAction(LinkGeneratorService linkGeneratorService)
         {
             _links = linkGeneratorService;
         }
-        public void Process(Post source, PostModel destination, ResolutionContext context)
+        public void Process(PostPicture source, AttachExternalModel destination, ResolutionContext context)
             => _links.FixContent(source, destination);
     }
 }

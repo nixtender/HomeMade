@@ -7,13 +7,15 @@
         public string Email { get; set; }
         public DateTimeOffset BirthDate { get; set; }
         public string? AvatarLink { get; set; }
+        public int PostCount { get; set; }
 
-        public UserModel(Guid id, string name, string email, DateTimeOffset birthDate)
+        /*public UserModel(Guid id, string name, string email, DateTimeOffset birthDate, int postCount)
         {
             Id = id;
             Name = name;
             Email = email;
             BirthDate = birthDate;
-        }
+            PostCount = postCount;
+        }*/
     }
 }

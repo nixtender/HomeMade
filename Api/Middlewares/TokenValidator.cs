@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
-namespace Api
+namespace Api.Middlewares
 {
     public class TokenValidatorMiddleware
     {
@@ -16,7 +16,7 @@ namespace Api
         public async Task InvokeAsync(HttpContext context, UserService userService)
         {
             var isOk = true;
-            var sessionIdString = context.User.Claims.FirstOrDefault(x=>x.Type == "sessionId")?.Value;
+            var sessionIdString = context.User.Claims.FirstOrDefault(x => x.Type == "sessionId")?.Value;
             if (Guid.TryParse(sessionIdString, out var sessionId))
             {
                 var session = await userService.GetSessionById(sessionId);
@@ -27,7 +27,7 @@ namespace Api
                     context.Response.StatusCode = 401;
                     await context.Response.WriteAsync("session is not active");
                 }
-                
+
             }
             if (isOk)
             {

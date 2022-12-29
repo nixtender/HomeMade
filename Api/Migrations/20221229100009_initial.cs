@@ -19,7 +19,8 @@ namespace Api.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    BirthDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    BirthDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    PushToken = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
