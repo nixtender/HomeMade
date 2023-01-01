@@ -1,5 +1,6 @@
 ﻿using Api.Models.Attach;
 using Api.Models.Comment;
+using Api.Models.Like;
 using Api.Models.Post;
 using Api.Services;
 using AutoMapper;
@@ -99,6 +100,20 @@ namespace Api.Controllers
             }
             else throw new Exception("No Comments");
             return commentModels;
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task LikeOrNotPost(CreateLikeModel model)
+        {
+            var post = await _postService.GetPostById(model.ObjectId);
+            var currentUserIdStr = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            if (Guid.TryParse(currentUserIdStr, out var currentUserId))
+            {
+                model.UserId = currentUserId;
+                await _postService.LikeOrNotPost(model, post);
+            }
+            else throw new Exception("you are not authorized");
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Api.Models.Post
         public DateTimeOffset CreatedPost { get; set; }
         public UserModel Author { get; set; }
         public int CommentCount { get; set; }
+        public int LikeCount { get; set; }
 
         /*public PostModel(ICollection<string>? pictures, string? description, DateTimeOffset createdPost, UserModel author, int commentCount)
         {

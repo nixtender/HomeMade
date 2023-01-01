@@ -1,6 +1,7 @@
 ﻿using Api.Mapper.MapperActions;
 using Api.Models.Attach;
 using Api.Models.Comment;
+using Api.Models.Like;
 using Api.Models.Post;
 using Api.Models.User;
 using AutoMapper;
@@ -28,13 +29,18 @@ namespace Api.Mapper
             CreateMap<DAL.Entites.Post, Models.Post.PostModel>()
                 .ForMember(d => d.Pictures, m => m.MapFrom(s => s.PostPictures))
                 .ForMember(d => d.CreatedPost, m => m.MapFrom(s => s.Created))
-                .ForMember(d => d.CommentCount, m => m.MapFrom(s => s.Comments == null ? 0 : s.Comments.Count));
+                .ForMember(d => d.CommentCount, m => m.MapFrom(s => s.Comments == null ? 0 : s.Comments.Count))
+                .ForMember(d => d.LikeCount, m => m.MapFrom(s => s.LikePosts == null ? 0 : s.LikePosts.Count));
             //.AfterMap<PostPictureMapperAction>();
             CreateMap<DAL.Entites.PostPicture, AttachExternalModel>().AfterMap<PostPictureMapperAction>();
 
             CreateMap<CreateComment, DAL.Entites.Comment>()
                 .ForMember(d => d.Created, m => m.MapFrom(s => DateTime.UtcNow));
             CreateMap<DAL.Entites.Comment, CommentModel>();
+
+            CreateMap<CreateLikeModel, DAL.Entites.LikePost>()
+                .ForMember(d => d.CreateDate, m => m.MapFrom(s => DateTime.UtcNow))
+                .ForMember(d => d.PostId, m => m.MapFrom(s => s.ObjectId));
         }
     }
 }

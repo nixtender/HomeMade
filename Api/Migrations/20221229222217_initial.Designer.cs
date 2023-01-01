@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221229100009_initial")]
+    [Migration("20221229222217_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -83,6 +83,30 @@ namespace Api.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("DAL.Entites.LikePost", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("LikePosts");
                 });
 
             modelBuilder.Entity("DAL.Entites.Post", b =>
@@ -214,6 +238,25 @@ namespace Api.Migrations
                     b.Navigation("Post");
                 });
 
+            modelBuilder.Entity("DAL.Entites.LikePost", b =>
+                {
+                    b.HasOne("DAL.Entites.Post", "Post")
+                        .WithMany("LikePosts")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Entites.User", "User")
+                        .WithMany("LikePosts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DAL.Entites.Post", b =>
                 {
                     b.HasOne("DAL.Entites.User", "Author")
@@ -274,12 +317,16 @@ namespace Api.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("LikePosts");
+
                     b.Navigation("PostPictures");
                 });
 
             modelBuilder.Entity("DAL.Entites.User", b =>
                 {
                     b.Navigation("Avatar");
+
+                    b.Navigation("LikePosts");
 
                     b.Navigation("Posts");
 
