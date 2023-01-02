@@ -109,6 +109,14 @@ namespace Api.Services
             else throw new Exception("not user");
         }
 
+        public async Task<Comment> GetCommentById(Guid commentId)
+        {
+            var comment = await _context.Comments.Include(x => x.Post).FirstOrDefaultAsync(x => x.Id == commentId);
+            if (comment == null)
+                throw new Exception("comment not found");
+            return comment;
+        }
+
         public async Task LikeOrNotPost(CreateLikeModel model, Post post)
         {
             if (await _context.LikePosts.AnyAsync(x => x.UserId == model.UserId && x.PostId == model.ObjectId))
@@ -122,6 +130,19 @@ namespace Api.Services
             likePost.Post = post;*/
             await _context.LikePosts.AddAsync(likePost);
             await _context.SaveChangesAsync();
-}
+        }
+
+        public async Task LikeOrNotComment(CreateLikeModel model, Comment comment)
+        {
+            if (await _context.LikeComments.AnyAsync(x => x.UserId == model.UserId && x.CommentId == model.ObjectId))
+            {
+                //_context.LikePosts.Remove(post.LikePosts.FirstOrDefault(x => x.UserId == model.UserId && x.PostId == model.ObjectId));
+                //_context.SaveChanges();
+                return;
+            }
+            var likeComment = _mapper.Map<LikeComment>(model);
+            await _context.LikeComments.AddAsync(likeComment);
+            await _context.SaveChangesAsync();
+        }
     }
 }

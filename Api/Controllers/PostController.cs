@@ -115,5 +115,19 @@ namespace Api.Controllers
             }
             else throw new Exception("you are not authorized");
         }
+
+        [HttpPost]
+        [Authorize]
+        public async Task LikeOrNotComment(CreateLikeModel model)
+        {
+            var comment = await _postService.GetCommentById(model.ObjectId);
+            var currentUserIdStr = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            if (Guid.TryParse(currentUserIdStr, out var currentUserId))
+            {
+                model.UserId = currentUserId;
+                await _postService.LikeOrNotComment(model, comment);
+            }
+            else throw new Exception("you are not authorized");
+        }
     }
 }
