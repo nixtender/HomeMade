@@ -111,29 +111,10 @@ namespace Api.Services
 
         public async Task LikeOrNotPost(CreateLikeModel model, Post post)
         {
-            /*var likes = post.LikePosts;
-            //
-            var user = await _context.Users.Include(x => x.Avatar).Include(x => x.Posts).Include(x => x.LikePosts).AsNoTracking().FirstOrDefaultAsync(x => x.Id == currentUserId);
-            //
-            if (likes != null && likes.Count > 0)
-            {
-                foreach (var like in likes)
-                {
-                    if (like.UserId == currentUserId)
-                    {
-                        post.LikePosts.Remove(like);
-                        _context.SaveChanges();
-                        return;
-                    }
-                }
-            }
-            var likePost = new LikePost { CreateDate = DateTime.UtcNow };
-            likePost.Post = post;
-            //likePost.User = user;
-            //post.LikePosts.Add(likePost);*/
-            //var user = await _context.Users.Include(x => x.LikePosts).AsNoTracking().FirstOrDefaultAsync(x => x.Id == model.UserId);
             if (await _context.LikePosts.AnyAsync(x => x.UserId == model.UserId && x.PostId == model.ObjectId))
             {
+                _context.LikePosts.Remove(post.LikePosts.FirstOrDefault(x => x.UserId == model.UserId && x.PostId == model.ObjectId));
+                _context.SaveChanges();
                 return;
             }
             var likePost = _mapper.Map<LikePost>(model);
