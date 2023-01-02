@@ -28,6 +28,7 @@ namespace DAL
             
             modelBuilder.Entity<Avatar>().ToTable(nameof(Avatars));
             modelBuilder.Entity<Avatar>().HasOne(b => b.User).WithOne(b => b.Avatar).HasForeignKey<Avatar>(b => b.UserId);
+            modelBuilder.Entity<LikePost>().ToTable(nameof(LikePosts));
             modelBuilder.Entity<LikeComment>().ToTable(nameof(LikeComments));
         }
 

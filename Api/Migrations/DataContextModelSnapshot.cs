@@ -103,30 +103,6 @@ namespace Api.Migrations
                     b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("DAL.Entites.LikePost", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreateDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("PostId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("LikePosts");
-                });
-
             modelBuilder.Entity("DAL.Entites.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -246,6 +222,18 @@ namespace Api.Migrations
                     b.ToTable("LikeComments", (string)null);
                 });
 
+            modelBuilder.Entity("DAL.Entites.LikePost", b =>
+                {
+                    b.HasBaseType("DAL.Entites.Like");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("LikePosts", (string)null);
+                });
+
             modelBuilder.Entity("DAL.Entites.Attach", b =>
                 {
                     b.HasOne("DAL.Entites.User", "Author")
@@ -275,25 +263,6 @@ namespace Api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DAL.Entites.LikePost", b =>
-                {
-                    b.HasOne("DAL.Entites.Post", "Post")
-                        .WithMany("LikePosts")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DAL.Entites.User", "User")
-                        .WithMany("LikePosts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });
@@ -357,7 +326,7 @@ namespace Api.Migrations
             modelBuilder.Entity("DAL.Entites.LikeComment", b =>
                 {
                     b.HasOne("DAL.Entites.Comment", "Comment")
-                        .WithMany()
+                        .WithMany("LikeComments")
                         .HasForeignKey("CommentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -369,6 +338,28 @@ namespace Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Comment");
+                });
+
+            modelBuilder.Entity("DAL.Entites.LikePost", b =>
+                {
+                    b.HasOne("DAL.Entites.Like", null)
+                        .WithOne()
+                        .HasForeignKey("DAL.Entites.LikePost", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Entites.Post", "Post")
+                        .WithMany("LikePosts")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("DAL.Entites.Comment", b =>
+                {
+                    b.Navigation("LikeComments");
                 });
 
             modelBuilder.Entity("DAL.Entites.Post", b =>
@@ -383,8 +374,6 @@ namespace Api.Migrations
             modelBuilder.Entity("DAL.Entites.User", b =>
                 {
                     b.Navigation("Avatar");
-
-                    b.Navigation("LikePosts");
 
                     b.Navigation("Posts");
 
