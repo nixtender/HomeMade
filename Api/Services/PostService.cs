@@ -111,7 +111,7 @@ namespace Api.Services
 
         public async Task<Comment> GetCommentById(Guid commentId)
         {
-            var comment = await _context.Comments.Include(x => x.Post).FirstOrDefaultAsync(x => x.Id == commentId);
+            var comment = await _context.Comments.Include(x => x.Post).Include(x => x.LikeComments).FirstOrDefaultAsync(x => x.Id == commentId);
             if (comment == null)
                 throw new Exception("comment not found");
             return comment;
@@ -136,8 +136,8 @@ namespace Api.Services
         {
             if (await _context.LikeComments.AnyAsync(x => x.UserId == model.UserId && x.CommentId == model.ObjectId))
             {
-                //_context.LikePosts.Remove(post.LikePosts.FirstOrDefault(x => x.UserId == model.UserId && x.PostId == model.ObjectId));
-                //_context.SaveChanges();
+                _context.LikeComments.Remove(comment.LikeComments.FirstOrDefault(x => x.UserId == model.UserId && x.CommentId == model.ObjectId));
+                _context.SaveChanges();
                 return;
             }
             var likeComment = _mapper.Map<LikeComment>(model);
