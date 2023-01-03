@@ -34,5 +34,12 @@ namespace Api.Services
             await _context.Chats.AddAsync(dbChat);
             await _context.SaveChangesAsync();
         }
+
+        public async Task SendMessage(CreateMessageModel model)
+        {
+            var dbMessage = _mapper.Map<Message>(model);
+            await _context.Messages.AddAsync(dbMessage);
+            await _context.SaveChangesAsync();
+        }
     }
 }

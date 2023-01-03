@@ -20,6 +20,7 @@ namespace DAL.Entites
         public virtual ICollection<Subscribtion>? Subscribtions { get; set; }
         public virtual ICollection<Subscribtion>? Followers { get; set; }
         public virtual ICollection<Chat>? Chats { get; set; }
+        public virtual ICollection<Message>? Messages { get; set; }
         public string? PushToken { get; set; }
     }
 }

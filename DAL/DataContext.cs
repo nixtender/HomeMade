@@ -50,5 +50,6 @@ namespace DAL
         public DbSet<LikeComment> LikeComments => Set<LikeComment>();
         public DbSet<Subscribtion> Subscribtions => Set<Subscribtion>();
         public DbSet<Chat> Chats => Set<Chat>();
+        public DbSet<Message> Messages => Set<Message>();
     }
 }

@@ -26,5 +26,17 @@ namespace Api.Controllers
             var userId = User.GetClaimValue<Guid>(ClaimNames.Id);
             await _chatService.CreateChat(model, userId);
         }
+
+        [HttpPost]
+        public async Task SendMessage(CreateMessageModel model)
+        {
+            var userId = User.GetClaimValue<Guid>(ClaimNames.Id);
+            if (userId != default)
+            {
+                model.SenderId = userId;
+                await _chatService.SendMessage(model);
+            }
+            else throw new Exception("user is not found");
+        }
     }
 }

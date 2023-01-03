@@ -1,5 +1,6 @@
 ﻿using Api.Mapper.MapperActions;
 using Api.Models.Attach;
+using Api.Models.Chat;
 using Api.Models.Comment;
 using Api.Models.Like;
 using Api.Models.Post;
@@ -48,6 +49,8 @@ namespace Api.Mapper
 
             CreateMap<CreateSubscribtionModel, DAL.Entites.Subscribtion>()
                 .ForMember(d => d.SubscriptionDate, m => m.MapFrom(s => DateTime.UtcNow));
+            CreateMap<CreateMessageModel, DAL.Entites.Message>()
+                .ForMember(d => d.SendingTime, m => m.MapFrom(s => DateTime.UtcNow));
         }
     }
 }
