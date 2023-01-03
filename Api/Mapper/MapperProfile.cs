@@ -3,6 +3,7 @@ using Api.Models.Attach;
 using Api.Models.Comment;
 using Api.Models.Like;
 using Api.Models.Post;
+using Api.Models.Subscribtion;
 using Api.Models.User;
 using AutoMapper;
 using Common;
@@ -44,6 +45,9 @@ namespace Api.Mapper
             CreateMap<CreateLikeModel, DAL.Entites.LikeComment>()
                 .ForMember(d => d.CreateDate, m => m.MapFrom(s => DateTime.UtcNow))
                 .ForMember(d => d.CommentId, m => m.MapFrom(s => s.ObjectId));
+
+            CreateMap<CreateSubscribtionModel, DAL.Entites.Subscribtion>()
+                .ForMember(d => d.SubscriptionDate, m => m.MapFrom(s => DateTime.UtcNow));
         }
     }
 }

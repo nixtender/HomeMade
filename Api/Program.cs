@@ -63,6 +63,7 @@ builder.Services.AddTransient<AttachService>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<LinkGeneratorService>();
 builder.Services.AddScoped<GooglePushService>();
+builder.Services.AddScoped<SubscribtionService>();
 
 builder.Services.AddAuthentication(o =>
 {

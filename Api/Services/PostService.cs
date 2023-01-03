@@ -126,8 +126,6 @@ namespace Api.Services
                 return;
             }
             var likePost = _mapper.Map<LikePost>(model);
-            /*likePost.User = user;
-            likePost.Post = post;*/
             await _context.LikePosts.AddAsync(likePost);
             await _context.SaveChangesAsync();
         }
