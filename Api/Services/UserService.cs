@@ -86,7 +86,7 @@ namespace Api.Services
 
         public async Task<DAL.Entites.User> GetUserById(Guid id)
         {
-            var user = await _context.Users.Include(x => x.Avatar).Include(x => x.Posts).Include(x => x.Subscribtions).Include(x => x.Followers).FirstOrDefaultAsync(x => x.Id == id);
+            var user = await _context.Users.Include(x => x.Avatar).Include(x => x.Posts).Include(x => x.Subscribtions).Include(x => x.Followers).Include(x => x.Chats).FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
                 throw new Exception("user not found");
             return user;

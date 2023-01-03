@@ -32,6 +32,7 @@ namespace DAL
             modelBuilder.Entity<LikeComment>().ToTable(nameof(LikeComments));
             modelBuilder.Entity<User>().HasMany(b => b.Followers).WithOne(b => b.Publisher).HasForeignKey(b => b.PublisherId);
             modelBuilder.Entity<User>().HasMany(b => b.Subscribtions).WithOne(b => b.Follower).HasForeignKey(b => b.FollowerId);
+            //modelBuilder.Entity<User>().HasMany(b => b.Chats).WithMany(b => b.Users).UsingEntity(b => b.ToTable("Chats"));
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
@@ -48,5 +49,6 @@ namespace DAL
         public DbSet<LikePost> LikePosts => Set<LikePost>();
         public DbSet<LikeComment> LikeComments => Set<LikeComment>();
         public DbSet<Subscribtion> Subscribtions => Set<Subscribtion>();
+        public DbSet<Chat> Chats => Set<Chat>();
     }
 }
