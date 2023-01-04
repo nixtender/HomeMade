@@ -62,6 +62,7 @@ namespace Api.Services
             var posts = await _context.Posts
                 .Include(x => x.Author).ThenInclude(x => x.Avatar)
                 .Include(x => x.Comments)
+                .Include(x => x.LikePosts)
                 .Include(x => x.PostPictures).AsNoTracking().OrderByDescending(x => x.Created)
                 .Select(x => _mapper.Map<PostModel>(x))
                 .ToListAsync();
