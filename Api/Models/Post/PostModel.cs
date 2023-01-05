@@ -13,6 +13,7 @@ namespace Api.Models.Post
         public UserModel Author { get; set; }
         public int CommentCount { get; set; }
         public int LikeCount { get; set; }
+        public bool IsLike { get; set; } = false;
 
         /*public PostModel(ICollection<string>? pictures, string? description, DateTimeOffset createdPost, UserModel author, int commentCount)
         {

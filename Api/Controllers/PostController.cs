@@ -4,6 +4,7 @@ using Api.Models.Like;
 using Api.Models.Post;
 using Api.Services;
 using AutoMapper;
+using Common.Consts;
 using Common.Extentions;
 using DAL.Entites;
 using Microsoft.AspNetCore.Authorization;
@@ -72,7 +73,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<List<PostModel>> GetPosts() => await _postService.GetPosts();
+        public async Task<List<PostModel>> GetPosts() => await _postService.GetPosts(User.GetClaimValue<Guid>(ClaimNames.Id));
 
         [HttpGet]
         public async Task<PostModel> GetPost(Guid postId) => await _postService.GetPost(postId);
@@ -95,7 +96,7 @@ namespace Api.Controllers
             {
                 foreach (var comment in post.Comments)
                 {
-                    commentModels.Add(await _postService.GetComment(comment));
+                    commentModels.Add(await _postService.GetComment(comment, User.GetClaimValue<Guid>(ClaimNames.Id)));
                 }
             }
             else throw new Exception("No Comments");
@@ -115,6 +116,13 @@ namespace Api.Controllers
             }
             else throw new Exception("you are not authorized");
         }
+
+        /*[HttpPost]
+        [Authorize]
+        public async Task<List<LikeModel>> GetLikePosts()
+        {
+
+        }*/
 
         [HttpPost]
         [Authorize]

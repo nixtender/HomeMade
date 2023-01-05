@@ -57,16 +57,30 @@ namespace Api.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<PostModel>> GetPosts()
+        public async Task<List<PostModel>> GetPosts(Guid userId)
         {
             var posts = await _context.Posts
                 .Include(x => x.Author).ThenInclude(x => x.Avatar)
                 .Include(x => x.Comments)
                 .Include(x => x.LikePosts)
                 .Include(x => x.PostPictures).AsNoTracking().OrderByDescending(x => x.Created)
-                .Select(x => _mapper.Map<PostModel>(x))
+                //.Select(x => _mapper.Map<PostModel>(x))
                 .ToListAsync();
-            return posts;
+            List<PostModel> postModels = new List<PostModel>();
+            foreach (var post in posts)
+            {
+                var postModel = _mapper.Map<PostModel>(post);
+                foreach (var likePost in post.LikePosts)
+                {
+                    if (likePost.UserId == userId)
+                    {
+                        postModel.IsLike = true;
+                        break;
+                    }
+                }
+                postModels.Add(postModel);
+            }
+            return postModels;
         }
 
         public async Task<PostModel> GetPost(Guid postId)
@@ -77,7 +91,7 @@ namespace Api.Services
 
         public async Task<Post> GetPostById(Guid postId)
         {
-            var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).Include(x => x.LikePosts).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
+            var post = await _context.Posts.Include(x => x.Author).ThenInclude(x => x.Avatar).Include(x => x.PostPictures).Include(x => x.Comments).ThenInclude(x => x.LikeComments).Include(x => x.LikePosts).AsNoTracking().FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null)
                 throw new Exception("post not found");
             return post;
@@ -98,13 +112,19 @@ namespace Api.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<CommentModel> GetComment(Comment comment)
+        public async Task<CommentModel> GetComment(Comment comment, Guid? userId)
         {
             var commentModel = _mapper.Map<CommentModel>(comment);
             if (Guid.TryParse(comment.AuthorId, out var authorId))
             {
                 var author = await _userService.GetUserById(authorId);
                 commentModel.Author = _mapper.Map<Models.User.UserModel>(author);
+
+                if (comment.LikeComments.Any(x => x.UserId == userId))
+                {
+                    commentModel.IsLiked = true;
+                }
+
                 return commentModel;
             }
             else throw new Exception("not user");

@@ -38,11 +38,14 @@ namespace Api.Mapper
 
             CreateMap<CreateComment, DAL.Entites.Comment>()
                 .ForMember(d => d.Created, m => m.MapFrom(s => DateTime.UtcNow));
-            CreateMap<DAL.Entites.Comment, CommentModel>();
+            CreateMap<DAL.Entites.Comment, CommentModel>()
+                .ForMember(d => d.LikeCount, m => m.MapFrom(s => s.LikeComments == null ? 0 : s.LikeComments.Count));
 
             CreateMap<CreateLikeModel, DAL.Entites.LikePost>()
                 .ForMember(d => d.CreateDate, m => m.MapFrom(s => DateTime.UtcNow))
                 .ForMember(d => d.PostId, m => m.MapFrom(s => s.ObjectId));
+            CreateMap<DAL.Entites.LikePost, LikeModel>()
+                .ForMember(d => d.ObjectId, m => m.MapFrom(s => s.PostId));
             CreateMap<CreateLikeModel, DAL.Entites.LikeComment>()
                 .ForMember(d => d.CreateDate, m => m.MapFrom(s => DateTime.UtcNow))
                 .ForMember(d => d.CommentId, m => m.MapFrom(s => s.ObjectId));

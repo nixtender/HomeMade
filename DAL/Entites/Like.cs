@@ -8,7 +8,6 @@ namespace DAL.Entites
 {
     public class Like
     {
-
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public DateTimeOffset CreateDate { get; set; }

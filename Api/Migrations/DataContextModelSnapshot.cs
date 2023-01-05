@@ -34,7 +34,7 @@ namespace Api.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("ChatUser");
+                    b.ToTable("ChatUser", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entites.Attach", b =>
@@ -65,7 +65,7 @@ namespace Api.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Attaches");
+                    b.ToTable("Attaches", (string)null);
 
                     b.UseTptMappingStrategy();
                 });
@@ -87,7 +87,7 @@ namespace Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Chats");
+                    b.ToTable("Chats", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entites.Comment", b =>
@@ -114,7 +114,7 @@ namespace Api.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entites.Like", b =>
@@ -133,7 +133,7 @@ namespace Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Likes");
+                    b.ToTable("Likes", (string)null);
 
                     b.UseTptMappingStrategy();
                 });
@@ -162,7 +162,7 @@ namespace Api.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entites.Post", b =>
@@ -184,7 +184,7 @@ namespace Api.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entites.Subscribtion", b =>
@@ -208,7 +208,7 @@ namespace Api.Migrations
 
                     b.HasIndex("PublisherId");
 
-                    b.ToTable("Subscribtions");
+                    b.ToTable("Subscribtions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entites.User", b =>
@@ -243,7 +243,7 @@ namespace Api.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entites.UserSession", b =>
@@ -268,7 +268,7 @@ namespace Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserSessions");
+                    b.ToTable("UserSessions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entites.Avatar", b =>
@@ -293,7 +293,7 @@ namespace Api.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostPictures");
+                    b.ToTable("PostPictures", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entites.LikeComment", b =>
