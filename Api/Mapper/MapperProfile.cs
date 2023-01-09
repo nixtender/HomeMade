@@ -54,6 +54,10 @@ namespace Api.Mapper
                 .ForMember(d => d.SubscriptionDate, m => m.MapFrom(s => DateTime.UtcNow));
             CreateMap<CreateMessageModel, DAL.Entites.Message>()
                 .ForMember(d => d.SendingTime, m => m.MapFrom(s => DateTime.UtcNow));
+
+            CreateMap<DAL.Entites.Chat, ChatModel>()
+                .ForMember(d => d.EndMessage, m => m.MapFrom(s => s.Messages.MaxBy(y => y.SendingTime).Text));
+            CreateMap<DAL.Entites.Message, MessageModel>();
         }
     }
 }

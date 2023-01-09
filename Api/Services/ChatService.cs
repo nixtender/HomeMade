@@ -1,7 +1,10 @@
 ﻿using Api.Models.Chat;
+using Api.Models.User;
 using AutoMapper;
 using DAL;
 using DAL.Entites;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Services
 {
@@ -26,13 +29,29 @@ namespace Api.Services
                 recipients.Add(await _userService.GetUserById(recipientId));
             }
             var dbChat = new Chat { CreateChatTime = DateTime.UtcNow, EndMessageTime = DateTime.UtcNow };
-            if (recipients.Count == 1 && model.Name == null)
-                dbChat.Name = recipients[0].Name;
-            else dbChat.Name = model.Name;
+            dbChat.Name = model.Name;
             recipients.Add(await _userService.GetUserById(userId));
             dbChat.Users = recipients;
             await _context.Chats.AddAsync(dbChat);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<ChatModel>> GetChats(Guid userId)
+        {
+            var chats = await _context.Chats
+                .Include(x => x.Users).ThenInclude(x => x.Avatar)
+                .Include(x => x.Messages)
+                .Where(x => x.Users.Any(y => y.Id == userId))
+                .OrderByDescending(x => x.EndMessageTime)
+                .AsNoTracking()
+                .ToListAsync();
+            List<ChatModel> chatModels = new List<ChatModel>();
+            foreach (var chat in chats)
+            {
+                var chatModel = _mapper.Map<ChatModel>(chat);
+                chatModels.Add(chatModel);
+            }
+            return chatModels;
         }
 
         public async Task SendMessage(CreateMessageModel model)
@@ -40,6 +59,20 @@ namespace Api.Services
             var dbMessage = _mapper.Map<Message>(model);
             await _context.Messages.AddAsync(dbMessage);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<MessageModel>> GetMessages(Guid chatId)
+        {
+            var chat = await _context.Chats.AsNoTracking().Include(x => x.Messages).Include(x => x.Users).FirstOrDefaultAsync(x => x.Id == chatId);
+            if (chat != null)
+            {
+                var messageModels = chat.Messages
+                    .OrderByDescending(x => x.SendingTime)
+                    .Select(x => _mapper.Map<MessageModel>(x))
+                    .ToList();
+                return messageModels;
+            }
+            throw new Exception("chat is not found");
         }
     }
 }
