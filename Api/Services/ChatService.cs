@@ -54,6 +54,22 @@ namespace Api.Services
             return chatModels;
         }
 
+        public async Task<ChatModel> GetCertainChat(Guid chatId)
+        {
+            var chat = await _context.Chats
+                .Include(x => x.Users).ThenInclude(x => x.Avatar)
+                .Include(x => x.Messages)
+                .Where(x => x.Id == chatId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (chat != null)
+            {
+                var chatModel = _mapper.Map<ChatModel>(chat);
+                return chatModel;
+            }
+            throw new Exception("chat is not found");
+        }
+
         public async Task<ChatModel> GetChat(Guid userId, Guid otherUserId)
         {
             var chats = await _context.Chats

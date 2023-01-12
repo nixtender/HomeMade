@@ -51,6 +51,8 @@ namespace Api.Mapper
             CreateMap<CreateLikeModel, DAL.Entites.LikeComment>()
                 .ForMember(d => d.CreateDate, m => m.MapFrom(s => DateTime.UtcNow))
                 .ForMember(d => d.CommentId, m => m.MapFrom(s => s.ObjectId));
+            CreateMap<DAL.Entites.LikePost, LikePostModel>();
+            CreateMap<DAL.Entites.LikeComment, LikeCommentModel>();
 
             CreateMap<CreateSubscribtionModel, DAL.Entites.Subscribtion>()
                 .ForMember(d => d.SubscriptionDate, m => m.MapFrom(s => DateTime.UtcNow));

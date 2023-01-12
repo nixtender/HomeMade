@@ -1,4 +1,5 @@
 ﻿using Api.Models.Chat;
+using Api.Models.Push;
 using Api.Models.User;
 using Api.Services;
 using Common.Consts;
@@ -16,8 +17,10 @@ namespace Api.Controllers
     public class ChatController : ControllerBase
     {
         private readonly ChatService _chatService;
+        private readonly UserService _userService;
+        private readonly GooglePushService _googlePushService;
 
-        public ChatController(ChatService chatService, LinkGeneratorService links)
+        public ChatController(ChatService chatService, LinkGeneratorService links, UserService userService, GooglePushService googlePushService)
         {
             _chatService = chatService;
 
@@ -26,6 +29,8 @@ namespace Api.Controllers
             {
                 userId = x.Id,
             });
+            _userService = userService;
+            _googlePushService = googlePushService;
         }
 
         [HttpPost]
@@ -50,30 +55,53 @@ namespace Api.Controllers
             return await _chatService.GetChat(userId, otherUserId);
         }
 
+        [HttpGet]
+        public async Task<ChatModel> GetCertainChat(Guid chatId) => await _chatService.GetCertainChat(chatId);
+
         [HttpPost]
         public async Task SendMessage(CreateMessageModel model)
         {
             var res = new List<string>();
-            var userIdString = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
-            if (Guid.TryParse(userIdString, out var userId))
-            {
-                var userIdT = model.UserId ?? userId;
-                var token = await _userService.GetPushToken(userIdT);
-                if (token != default)
-                {
-                    res =  _googlePushService.SendNotification(token, model.Push);
-                }
-            }
-            return res;
-
-
             var userId = User.GetClaimValue<Guid>(ClaimNames.Id);
+            var user = await _userService.GetUserById(userId);
+            var chat = await _chatService.GetCertainChat(model.ChatId);
+            if (chat != null)
+            {
+                var otherIds = new List<Guid>();
+                foreach(var chUser in chat.Users)
+                {
+                    otherIds.Add(chUser.Id);
+                }
+                otherIds.Remove(userId);
+
+                model.SenderId = userId;
+                await _chatService.SendMessage(model);
+
+                foreach(var otherId in otherIds)
+                {
+                    var token = await _userService.GetPushToken(otherId);
+                    if (token != default)
+                    {
+                        var pushModel = new PushModel { Alert = new PushModel.AlertModel { Title = user.Name, Subtitle = "subtitle", Body = model.Text }, Badge = 0, Sound = "string", CustomData = new Dictionary<string, object>() { { "commandName", "getMessage" }, { "commandArg", chat.Id } } };
+                        //var sendPushModel = new SendPushModel { UserId = userId, Push = pushModel };
+
+                        res = _googlePushService.SendNotification(token, pushModel);
+                    }
+                }
+                
+                
+            }
+            //var userIdT = model.UserId ?? userId;
+            
+            /*return res;
+
+
             if (userId != default)
             {
                 model.SenderId = userId;
                 await _chatService.SendMessage(model);
             }
-            else throw new Exception("user is not found");
+            else throw new Exception("user is not found");*/
         }
 
         [HttpGet]

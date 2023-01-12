@@ -126,6 +126,10 @@ namespace Api.Controllers
             else throw new Exception("you are not authorized");
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<List<LikePostModel>> GetLikePosts() => await _postService.GetLikePosts(User.GetClaimValue<Guid>(ClaimNames.Id));
+
         /*[HttpPost]
         [Authorize]
         public async Task<List<LikeModel>> GetLikePosts()
@@ -146,5 +150,9 @@ namespace Api.Controllers
             }
             else throw new Exception("you are not authorized");
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<List<LikeCommentModel>> GetLikeComments() => await _postService.GetLikeComments(User.GetClaimValue<Guid>(ClaimNames.Id));
     }
 }

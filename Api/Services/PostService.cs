@@ -222,6 +222,20 @@ namespace Api.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<LikePostModel>> GetLikePosts(Guid meUserId)
+        {
+            var likePosts = await _context.LikePosts.AsNoTracking().Include(x => x.User).ThenInclude(x => x.Avatar).Include(x => x.Post).ThenInclude(x => x.PostPictures).Include(x => x.Post).ThenInclude(x => x.Author).ThenInclude(x => x.Avatar).Where(x => x.Post.AuthorId == meUserId).ToListAsync();
+            List<LikePostModel> list = new List<LikePostModel>();
+            if (likePosts != null)
+            {
+                foreach(var likePost in likePosts)
+                {
+                    list.Add(_mapper.Map<LikePostModel>(likePost));
+                }
+            }
+            return list;
+        }
+
         public async Task LikeOrNotComment(CreateLikeModel model, Comment comment)
         {
             if (await _context.LikeComments.AnyAsync(x => x.UserId == model.UserId && x.CommentId == model.ObjectId))
@@ -233,6 +247,20 @@ namespace Api.Services
             var likeComment = _mapper.Map<LikeComment>(model);
             await _context.LikeComments.AddAsync(likeComment);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<LikeCommentModel>> GetLikeComments(Guid meUserId)
+        {
+            var likeComments = await _context.LikeComments.AsNoTracking().Include(x => x.User).ThenInclude(x => x.Avatar).Include(x => x.Comment).Where(x => Guid.Parse(x.Comment.AuthorId) == meUserId).ToListAsync();
+            List<LikeCommentModel> list = new List<LikeCommentModel>();
+            if (likeComments != null)
+            {
+                foreach (var likeComment in likeComments)
+                {
+                    list.Add(_mapper.Map<LikeCommentModel>(likeComment));
+                }
+            }
+            return list;
         }
     }
 }
