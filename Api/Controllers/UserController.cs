@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Common.Extentions;
+using DAL.Entites;
 
 namespace Api.Controllers
 {
@@ -67,5 +68,9 @@ namespace Api.Controllers
             }
             else throw new Exception("you are not authorized");
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<UserModel> GetUser(Guid userId) => await _userService.GetUser(userId);
     }
 }

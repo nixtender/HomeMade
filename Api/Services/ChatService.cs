@@ -54,9 +54,31 @@ namespace Api.Services
             return chatModels;
         }
 
+        public async Task<ChatModel> GetChat(Guid userId, Guid otherUserId)
+        {
+            var chats = await _context.Chats
+                .Include(x => x.Users).ThenInclude(x => x.Avatar)
+                .Include(x => x.Messages)
+                .Where(x => x.Users.Any(y => y.Id == userId) && x.Name == null)
+                .AsNoTracking()
+                .ToListAsync();
+            if (chats == null)
+                return new ChatModel { Id = Guid.NewGuid(), Name = "newnew", CreateChatTime = DateTime.UtcNow, EndMessageTime = DateTime.UtcNow };
+            var curChat = chats.Where(x => x.Users.Any(y => y.Id == otherUserId)).FirstOrDefault();
+            if (curChat == null || curChat == default)
+                return new ChatModel { Id = Guid.NewGuid(), Name = "newnew", CreateChatTime = DateTime.UtcNow, EndMessageTime = DateTime.UtcNow };
+            return _mapper.Map<ChatModel>(curChat);
+        }
+
         public async Task SendMessage(CreateMessageModel model)
         {
             var dbMessage = _mapper.Map<Message>(model);
+            var chat = await _context.Chats.Include(x => x.Messages).FirstOrDefaultAsync(x => x.Id == model.ChatId);
+            if (chat != null)
+            {
+                chat.EndMessageTime = dbMessage.SendingTime;
+                _context.Chats.Update(chat);
+            }
             await _context.Messages.AddAsync(dbMessage);
             await _context.SaveChangesAsync();
         }

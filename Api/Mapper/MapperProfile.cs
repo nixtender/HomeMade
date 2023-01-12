@@ -21,6 +21,8 @@ namespace Api.Mapper
                 .ForMember(d => d.BirthDate, m => m.MapFrom(s => s.BirthDate.UtcDateTime));
             CreateMap<DAL.Entites.User, UserModel>()
                 .ForMember(d => d.PostCount, m => m.MapFrom(s => s.Posts == null ? 0 : s.Posts.Count))
+                .ForMember(d => d.PublisherCount, m => m.MapFrom(s => s.Subscribtions == null ? 0 : s.Subscribtions.Count))
+                .ForMember(d => d.FollowerCount, m => m.MapFrom(s => s.Followers == null ? 0 : s.Followers.Count))
                 .AfterMap<UserAvatarMapperAction>();
 
             CreateMap<DAL.Entites.Attach, AttachModel>();
@@ -52,11 +54,12 @@ namespace Api.Mapper
 
             CreateMap<CreateSubscribtionModel, DAL.Entites.Subscribtion>()
                 .ForMember(d => d.SubscriptionDate, m => m.MapFrom(s => DateTime.UtcNow));
-            CreateMap<CreateMessageModel, DAL.Entites.Message>()
-                .ForMember(d => d.SendingTime, m => m.MapFrom(s => DateTime.UtcNow));
+            CreateMap<DAL.Entites.Subscribtion, SubscribtionModel>();
 
             CreateMap<DAL.Entites.Chat, ChatModel>()
                 .ForMember(d => d.EndMessage, m => m.MapFrom(s => s.Messages.MaxBy(y => y.SendingTime).Text));
+            CreateMap<CreateMessageModel, DAL.Entites.Message>()
+                .ForMember(d => d.SendingTime, m => m.MapFrom(s => DateTime.UtcNow));
             CreateMap<DAL.Entites.Message, MessageModel>();
         }
     }

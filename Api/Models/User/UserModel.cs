@@ -8,6 +8,8 @@
         public DateTimeOffset BirthDate { get; set; }
         public string? AvatarLink { get; set; }
         public int PostCount { get; set; }
+        public int PublisherCount { get; set; }
+        public int FollowerCount { get; set; }
 
         /*public UserModel(Guid id, string name, string email, DateTimeOffset birthDate, int postCount)
         {

@@ -73,10 +73,19 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<List<PostModel>> GetPosts() => await _postService.GetPosts(User.GetClaimValue<Guid>(ClaimNames.Id));
+        public async Task<List<PostModel>> GetPosts(int skip = 0, int take = 10) => await _postService.GetPosts(User.GetClaimValue<Guid>(ClaimNames.Id), skip, take);
+
+        [HttpGet]
+        public async Task<List<PostModel>> GetPostsByPublishers(int skip = 0, int take = 10) => await _postService.GetPostsByPublishers(User.GetClaimValue<Guid>(ClaimNames.Id), skip, take);
+
+        [HttpGet]
+        public async Task<List<PostModel>> GetPostsByMe(Guid userId, int skip = 0, int take = 10) => await _postService.GetPostsByMe(User.GetClaimValue<Guid>(ClaimNames.Id), userId, skip, take);
 
         [HttpGet]
         public async Task<PostModel> GetPost(Guid postId) => await _postService.GetPost(postId);
+
+        [HttpDelete]
+        public async Task DeletePost(Guid postId) => await _postService.DeletePost(postId);
 
         [HttpPost]
         [Authorize]

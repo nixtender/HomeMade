@@ -15,9 +15,15 @@ namespace Api.Controllers
     {
         private readonly SubscribtionService _subscribtionService;
 
-        public SubscribtionController(SubscribtionService subscribtionService)
+        public SubscribtionController(SubscribtionService subscribtionService, LinkGeneratorService links)
         {
             _subscribtionService = subscribtionService;
+
+            links.LinkAvatarGenerator = x =>
+            Url.ControllerAction<AttachController>(nameof(AttachController.GetUserAvatar), new
+            {
+                userId = x.Id,
+            });
         }
 
         [HttpPost]
@@ -51,5 +57,12 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<IEnumerable<UserModel>> ShowFollowers(Guid userId)
             => await _subscribtionService.GetFollowers(userId);
+
+        [HttpGet]
+        public async Task<List<SubscribtionModel>> GetSubAndFol()
+        {
+            var userId = User.GetClaimValue<Guid>(ClaimNames.Id);
+            return await _subscribtionService.GetSubAndFol(userId);
+        }
     }
 }

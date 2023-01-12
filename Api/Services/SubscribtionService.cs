@@ -42,7 +42,7 @@ namespace Api.Services
 
         public async Task<IEnumerable<UserModel>> GetSubscribtions(Guid userId)
         {
-            var publishers = await _context.Subscribtions.Where(x => x.FollowerId == userId).AsNoTracking().OrderByDescending(x => x.SubscriptionDate).Select(x => _mapper.Map<UserModel>(x.Publisher)).ToListAsync();
+            var publishers = await _context.Subscribtions.Include(x => x.Publisher).ThenInclude(x => x.Avatar).Include(x => x.Publisher).ThenInclude(x => x.Subscribtions).Include(x => x.Publisher).ThenInclude(x => x.Followers).Include(x => x.Publisher).ThenInclude(x => x.Posts).Where(x => x.FollowerId == userId).AsNoTracking().OrderByDescending(x => x.SubscriptionDate).Select(x => _mapper.Map<UserModel>(x.Publisher)).ToListAsync();
             if (publishers != null)
             {
                 return publishers;
@@ -52,12 +52,22 @@ namespace Api.Services
 
         public async Task<IEnumerable<UserModel>> GetFollowers(Guid userId)
         {
-            var followers = await _context.Subscribtions.Where(x => x.PublisherId == userId).AsNoTracking().OrderByDescending(x => x.SubscriptionDate).Select(x => _mapper.Map<UserModel>(x.Follower)).ToListAsync();
+            var followers = await _context.Subscribtions.Include(x => x.Follower).ThenInclude(x => x.Avatar).Include(x => x.Follower).ThenInclude(x => x.Subscribtions).Include(x => x.Follower).ThenInclude(x => x.Followers).Include(x => x.Follower).ThenInclude(x => x.Posts).Where(x => x.PublisherId == userId).AsNoTracking().OrderByDescending(x => x.SubscriptionDate).Select(x => _mapper.Map<UserModel>(x.Follower)).ToListAsync();
             if (followers != null)
             {
                 return followers;
             }
             else throw new Exception("users is not found");
+        }
+
+        public async Task<List<SubscribtionModel>> GetSubAndFol(Guid userId)
+        {
+            var subscribtions = await _context.Subscribtions.AsNoTracking().Where(x => x.PublisherId == userId || x.FollowerId == userId).ToListAsync();
+            if (subscribtions != null)
+            {
+                return subscribtions.OrderByDescending(x => x.SubscriptionDate).Select(x => _mapper.Map<SubscribtionModel>(x)).ToList();
+            }
+            throw new Exception("subscribtions are not found");
         }
     }
 }

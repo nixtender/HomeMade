@@ -43,9 +43,30 @@ namespace Api.Controllers
             return chatModels;
         }
 
+        [HttpGet]
+        public async Task<ChatModel> GetChat(Guid otherUserId)
+        {
+            var userId = User.GetClaimValue<Guid>(ClaimNames.Id);
+            return await _chatService.GetChat(userId, otherUserId);
+        }
+
         [HttpPost]
         public async Task SendMessage(CreateMessageModel model)
         {
+            var res = new List<string>();
+            var userIdString = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            if (Guid.TryParse(userIdString, out var userId))
+            {
+                var userIdT = model.UserId ?? userId;
+                var token = await _userService.GetPushToken(userIdT);
+                if (token != default)
+                {
+                    res =  _googlePushService.SendNotification(token, model.Push);
+                }
+            }
+            return res;
+
+
             var userId = User.GetClaimValue<Guid>(ClaimNames.Id);
             if (userId != default)
             {
